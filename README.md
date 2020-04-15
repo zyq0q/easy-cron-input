@@ -4,7 +4,7 @@
 
 > cron编辑器很多，但是用户要个简单的。我提莫的心态崩了呀，这盘拿下
 
-> [demo](https://penggy.github.io/easy-cron-input/element/index.html)
+> [demo](https://buy.511get.com/cron/index.html)
 
 ![](http://ww1.sinaimg.cn/large/79414a05gy1fnff4r0o1kj20h005lglj.jpg)
 
