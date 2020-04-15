@@ -45,13 +45,13 @@
     <div class="cron-input cron-weekly" v-show="period == '周'">
       <p>
         每周
-        <input type="checkbox" name="dayOfWeekMon" v-model="dow" value="0" @change="onChange">一
-        <input type="checkbox" name="dayOfWeekTue" v-model="dow" value="1" @change="onChange">二
-        <input type="checkbox" name="dayOfWeekWed" v-model="dow" value="2" @change="onChange">三
-        <input type="checkbox" name="dayOfWeekThu" v-model="dow" value="3" @change="onChange">四
-        <input type="checkbox" name="dayOfWeekFri" v-model="dow" value="4" @change="onChange">五
-        <input type="checkbox" name="dayOfWeekSat" v-model="dow" value="5" @change="onChange">六
-        <input type="checkbox" name="dayOfWeekSun" v-model="dow" value="6" @change="onChange">日
+        <input type="checkbox" name="dayOfWeekMon" v-model="dow" value="MON" @change="onChange">一
+              <input type="checkbox" name="dayOfWeekTue" v-model="dow" value="TUE" @change="onChange">二
+              <input type="checkbox" name="dayOfWeekWed" v-model="dow" value="WED" @change="onChange">三
+              <input type="checkbox" name="dayOfWeekThu" v-model="dow" value="THU" @change="onChange">四
+              <input type="checkbox" name="dayOfWeekFri" v-model="dow" value="FRI" @change="onChange">五
+              <input type="checkbox" name="dayOfWeekSat" v-model="dow" value="SAT" @change="onChange">六
+              <input type="checkbox" name="dayOfWeekSun" v-model="dow" value="SUN" @change="onChange">日
       </p>
     </div>
     <div class="cron-input cron-monthly" v-show="period == '月'">
@@ -99,7 +99,7 @@ export default {
   props: {
     value: {
       type: String,
-      default: "* * * * * *"
+      default: "* * * * * ?"
     }
   },
   data() {
@@ -136,7 +136,7 @@ export default {
       this.nhour = 1;
       this.nday = 1;
       this.nmonth = 1;
-      this.onChange();      
+      this.onChange();
     },
     onChange() {
       this.$emit('input', this.getExpress(), this.getText());
@@ -144,9 +144,9 @@ export default {
     getExpress() {
       var sec = 0; // ignoring seconds by default
       var year = "*"; // every year by default
-      var dow = "*",
-        dom = "*",
-        moy = "*";
+      var dow = "?", //week
+        dom = "*", //day
+        moy = "*"; //month
       var hour = this.hour,
         min = this.min;
       switch (this.period) {
@@ -179,11 +179,13 @@ export default {
           if (this.nday > 1) {
             dom = "*/" + this.nday;
           }
+          dow= "?";
           break;
         case "周":
           if (this.dow.length > 0 && this.dow.length < 7) {
             dow = this.dow.sort().join(",");
           }
+          dom = "?";
           break;
         case "月":
           if (this.nmonth > 1) {
@@ -201,7 +203,7 @@ export default {
       return [sec, min, hour, dom, moy, dow].join(" ");
     },
     setExpress(express) {
-      express = express || "* * * * * *";
+      express = express || "* * * * * ?";
       var crons = express.split(/\s+/);
       if (crons.length == 6) {
         if (crons[0] == "*") {
@@ -234,26 +236,26 @@ export default {
           this.nhour = crons[2].split('/')[1];
           return;
         }
-        if (crons[3] == "*" && crons[5] == "*") {
+        if (crons[3] == "*" && crons[5] == "?") {
           this.period = '天';
           this.nday = 1;
           this.hour = crons[2];
           this.min = crons[1];
           return;
         }
-        if (crons[3] == "*" && crons[5] != "*") {
+        if (crons[3] == "*" && crons[5] != "?") {
           this.period = '周';
           this.dow = crons[5].split(',');
           this.hour = crons[2];
-          this.min = crons[1];     
-          return;   
+          this.min = crons[1];
+          return;
         }
         if (crons[3].split("/").length == 2) {
           this.period = '天';
           this.nday = crons[3].split('/')[1];
           this.hour = crons[2];
-          this.min = crons[1];  
-          return;      
+          this.min = crons[1];
+          return;
         }
         if (crons[4] == "*") {
           this.period = '月';
@@ -261,7 +263,7 @@ export default {
           this.dom = crons[3];
           this.hour = crons[2];
           this.min = crons[1];
-          return;        
+          return;
         }
         if (crons[4].split("/").length == 2) {
           this.period = '月';
@@ -269,7 +271,7 @@ export default {
           this.dom = crons[3];
           this.hour = crons[2];
           this.min = crons[1];
-          return;          
+          return;
         }
         if (/\d+/.test(crons[4])) {
           this.period = '年';
@@ -277,9 +279,9 @@ export default {
           this.dom = crons[3];
           this.hour = crons[2];
           this.min = crons[1];
-          return;        
+          return;
         }
-      }      
+      }
     },
     getText() {
       var text = "";
@@ -297,16 +299,16 @@ export default {
         case '时':
         text += "每";
         text += this.nhour;
-        text += "分钟";        
+        text += "分钟";
         break;
         case '天':
         text += "每";
         text += this.nday;
-        text += "天";   
+        text += "天";
         text += ("00" + this.hour).slice(-2);
         text += "时";
         text += ("00" + this.min).slice(-2);
-        text += "分";     
+        text += "分";
         break;
         case '周':
         if(this.dow.length > 0 && this.dow.length < 7) {
@@ -314,42 +316,42 @@ export default {
           var _dow = this.dow.sort().map(v => {
             return this.dayOfWeekOpts[v];
           })
-          text += _dow.join(",");          
+          text += _dow.join(",");
         } else {
           text += "每天";
         }
         text += ("00" + this.hour).slice(-2);
         text += "时";
         text += ("00" + this.min).slice(-2);
-        text += "分";         
+        text += "分";
         break;
         case '月':
         text += "每";
         text += this.nmonth;
         text += "月";
-        text += this.dom;   
+        text += this.dom;
         text += "日";
         text += ("00" + this.hour).slice(-2);
         text += "时";
         text += ("00" + this.min).slice(-2);
-        text += "分";         
+        text += "分";
         break;
         case '年':
         text += "每年";
         text += this.moy;
         text += "月";
         text += this.dom;
-        text += "日";   
+        text += "日";
         text += ("00" + this.hour).slice(-2);
         text += "时";
         text += ("00" + this.min).slice(-2);
-        text += "分";         
+        text += "分";
         break;
         default:
         break;
       }
       return text;
-    }    
+    }
   }
 };
 </script>
@@ -359,12 +361,10 @@ export default {
   padding: 5px 5px 0px 5px;
   display: inline-block;
 }
-
 .cron-input {
   padding: 5px 5px 0px 5px;
   display: inline-block;
 }
-
 .cron-select-period select,
 .cron-input select,
 .cron-input input[type="radio"],
@@ -373,4 +373,3 @@ export default {
   margin-right: 5px;
 }
 </style>
-
