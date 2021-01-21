@@ -2,7 +2,7 @@
 
 > 一个简单的 cron 表达示编辑器
 
-> cron编辑器很多，但是用户要个简单的。我提莫的心态崩了呀，这盘拿下
+> cron编辑器很多，但是用户要个简单的。这盘拿下
 
 > [demo](http://buy.511get.com/cron/index.html)
 
