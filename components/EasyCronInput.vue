@@ -299,7 +299,7 @@ export default {
         case '时':
         text += "每";
         text += this.nhour;
-        text += "分钟";
+        text += "小时";
         break;
         case '天':
         text += "每";
